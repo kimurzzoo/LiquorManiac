@@ -1,0 +1,12 @@
+rootProject.name = "LiquorManiac"
+include("batch-scheduler")
+include("bff")
+include("chat")
+include("gpt")
+include("liquor")
+include("user")
+include("common")
+include("common:client")
+include("common:core")
+include("common:domain")
+include("common:other")
