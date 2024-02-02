@@ -44,7 +44,7 @@ class User(nickname : String, emailAddress : String, m_password : String, role :
     }
 
     override fun isAccountNonExpired(): Boolean {
-        TODO("Not yet implemented")
+        return true
     }
 
     override fun isAccountNonLocked(): Boolean {

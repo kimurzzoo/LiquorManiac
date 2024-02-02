@@ -14,7 +14,7 @@ class SecurityConfig {
     fun filterChain(http : HttpSecurity) : SecurityFilterChain
     {
         http
-            .cors{cors -> cors.disable()}
+            .cors{ cors -> cors.disable() }
             .csrf { csrf -> csrf.disable() }
             .httpBasic{ httpBasic -> httpBasic.disable() }
             .formLogin { formLogin -> formLogin.disable() }
