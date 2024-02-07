@@ -8,6 +8,7 @@ dependencies {
 	api(project(":common:domain:domain-user"))
 	api(project(":common:core:core-web"))
 	api(project(":common:client:client-util-dep"))
+	api(project(":common:others:redis-config"))
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.kafka:spring-kafka")
