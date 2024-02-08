@@ -6,14 +6,23 @@ import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import jakarta.annotation.PostConstruct
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.io.Resource
+import org.springframework.core.io.ResourceLoader
 import org.springframework.stereotype.Component
+import org.springframework.util.FileCopyUtils
+import java.io.InputStreamReader
+import java.io.Reader
 import java.security.Key
+import java.security.PrivateKey
 import java.util.*
 
 @Component
-class JwtProvider {
-    @Value("\${auth.secret}")
-    private var secretkey : String = ""
+class JwtProvider(private val resourceLoader: ResourceLoader) {
+
+    @Value("auth.key.private")
+    private var privateKeyPath : String = ""
+
+    private var privatekey : PrivateKey
 
     companion object
     {
@@ -25,7 +34,10 @@ class JwtProvider {
 
     @PostConstruct
     protected fun init() {
-        realkey = Keys.hmacShaKeyFor(secretkey.toByteArray())
+        val privateKeyResource : Resource = resourceLoader.getResource(privateKeyPath)
+        val reader : Reader = InputStreamReader(privateKeyResource.inputStream)
+        val privateKeyString = FileCopyUtils.copyToString(reader)
+        privatekey = PemReader
     }
 
     fun createAccessToken(username : String, role : String): String {
@@ -38,7 +50,7 @@ class JwtProvider {
             .setClaims(claims) // 정보 저장
             .setIssuedAt(now) // 토큰 발행 시간 정보
             .setExpiration(Date(now.time + accessTokenValidTime)) // set Expire Time
-            .signWith(realkey, SignatureAlgorithm.HS512)
+            .signWith(realkey, SignatureAlgorithm.RS256)
             // signature 에 들어갈 secret값 세팅
             .compact()
     }
