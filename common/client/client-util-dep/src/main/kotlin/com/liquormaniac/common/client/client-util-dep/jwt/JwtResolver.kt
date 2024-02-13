@@ -2,39 +2,48 @@ package com.liquormaniac.common.client.`client-util-dep`.jwt
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
+import jakarta.annotation.PostConstruct
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.io.Resource
+import org.springframework.core.io.ResourceLoader
 import org.springframework.stereotype.Component
-import java.security.Key
-import java.sql.Timestamp
-import java.time.format.DateTimeFormatter
+import java.security.PublicKey
 import java.util.*
 
 @Component
-class JwtResolver {
-    @Value("\${auth.secret}")
-    private var secretkey : String = ""
+class JwtResolver(private val resourceLoader: ResourceLoader) {
+    @Value("auth.key.public")
+    private var publicKeyPath : String = ""
 
-    companion object
-    {
-        const val accessTokenValidTime = 30 * 60 * 1000L
-        const val refreshTokenValidTime = 7 * 24 * 60 * 60 * 1000L
+    private lateinit var publicKey : PublicKey
+
+    @PostConstruct
+    protected fun init() {
+        val publicKeyResource : Resource = resourceLoader.getResource(publicKeyPath)
+        val temppublickey = publicKey(publicKeyResource.file.toPath())
+        if(temppublickey == null)
+        {
+            System.out.println("key is not initiated")
+        }
+        else
+        {
+            publicKey = temppublickey
+        }
     }
-
-    private var realkey : Key? = null
 
     fun getClaims(token: String) : Claims
     {
-        return Jwts.parserBuilder().setSigningKey(realkey).build().parseClaimsJws(token).body
+        return Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(token).body
     }
 
     fun getUsername(token : String) : String
     {
-        return Jwts.parserBuilder().setSigningKey(realkey).build().parseClaimsJws(token).body.subject
+        return Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(token).body.subject
     }
 
     fun validateToken(jwtToken: String?): Boolean {
         return try {
-            val claims = Jwts.parserBuilder().setSigningKey(realkey).build().parseClaimsJws(jwtToken)
+            val claims = Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(jwtToken)
             !claims.body.expiration.before(Date())
         } catch (e: Exception) {
             false

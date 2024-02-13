@@ -8,8 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService
 
 @Service
 class UserDetailService(private val userRepository : UserRepository) : UserDetailsService {
-    override fun loadUserByUsername(username: String?): UserDetails {
-        val user : User = userRepository.findByEmailAddress(username)
+    override fun loadUserByUsername(username: String?): UserDetails? {
+        val user : User? = userRepository.findByEmailAddress(username)
         return user
     }
 }

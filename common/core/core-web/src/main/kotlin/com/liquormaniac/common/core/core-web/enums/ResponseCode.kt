@@ -1,7 +1,10 @@
 package com.liquormaniac.common.core.`core-web`.enums
 
-enum class ResponseCode(code: Int, message: String) {
+enum class ResponseCode(val code: Int, val message: String) {
+    //common
     SUCCESS(200, "success"),
+
+    //user
     NO_USER(410, "There is no user."),
     SERVER_ERROR(500, "Server Error"),
     REGISTER_EMAIL_EXISTS(1001, "Your email is already registered."),
@@ -10,4 +13,9 @@ enum class ResponseCode(code: Int, message: String) {
     LOGIN_BLOCKED(1012, "Your account is blocked."),
     BLOCK_ALREADY_BLOCKED(1021, "This user is already blocked."),
     UNBLOCK_ALREADY_UNBLOCKED(1031, "This user is already unblocked."),
+    REISSUE_BLOCKED(1041, "Your account is blocked."),
+    REISSUE_NO_STATUS(1042, "There is no login status of you."),
+    REISSUE_WRONG_STATUS(1043, "You have wrong login status."),
+
+    //
 }
