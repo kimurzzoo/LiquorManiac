@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    api("org.springframework.boot:spring-boot-starter-data-jpa")
+    api(project(":common:domain:domain-core"))
     runtimeOnly("com.mysql:mysql-connector-j")
     api("org.springframework.boot:spring-boot-starter-security")
     api(project(":common:others:redis-config"))

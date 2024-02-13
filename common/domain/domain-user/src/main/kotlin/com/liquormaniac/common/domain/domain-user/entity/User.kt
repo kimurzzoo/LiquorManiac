@@ -1,5 +1,6 @@
 package com.liquormaniac.common.domain.`domain-user`.entity
 
+import com.liquormaniac.common.domain.`domain-core`.entity.BaseEntity
 import jakarta.persistence.*
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -7,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails
 
 @Entity
 @Table(name="user")
-class User(nickname : String, emailAddress : String, m_password : String, role : String) : UserDetails {
+class User(nickname : String, emailAddress : String, m_password : String, role : String) : UserDetails, BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
