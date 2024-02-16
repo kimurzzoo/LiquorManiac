@@ -235,4 +235,85 @@ class UserService(private val userRepository: UserRepository,
             return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
         }
     }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = [Exception::class])
+    fun changeRole(userId : Long, role : String) : ResponseDTO<Unit>
+    {
+        try {
+            val userOptional : Optional<User> = userRepository.findById(userId)
+            if(userOptional.isEmpty)
+            {
+                return ResponseDTO(ResponseCode.NO_USER)
+            }
+
+            val user : User = userOptional.get()
+
+            user.role = role
+
+            userRepository.save(user)
+
+            return ResponseDTO(ResponseCode.SUCCESS)
+        }
+        catch (e : Exception)
+        {
+            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
+        }
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = [Exception::class])
+    fun changeNickname(email : String, newNickname : String) : ResponseDTO<Unit>
+    {
+        try {
+            val user : User? = userRepository.findByEmailAddress(email)
+
+            if(user != null)
+            {
+                user.nickname = newNickname
+                userRepository.save(user)
+                return ResponseDTO(ResponseCode.SUCCESS)
+            }
+            else
+            {
+                return ResponseDTO(ResponseCode.NO_USER)
+            }
+        }
+        catch (e : Exception)
+        {
+            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
+        }
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = [Exception::class])
+    fun changePw(email : String, curPw : String, newPw : String, newPwConfirm : String) : ResponseDTO<Unit>
+    {
+        try {
+            val user : User? = userRepository.findByEmailAddress(email)
+
+            if(user != null)
+            {
+                if(!bCryptPasswordEncoder.matches(curPw, user.m_password))
+                {
+                    return ResponseDTO(ResponseCode.CHANGEPW_CUR_PW_NOT_MATCHED)
+                }
+
+                if(newPw != newPwConfirm)
+                {
+                    return ResponseDTO(ResponseCode.CHANGEPW_PASSWORD_NOT_CONFIRMED)
+                }
+
+                //pw regex 추가
+                user.m_password = newPw
+                userRepository.save(user)
+                return ResponseDTO(ResponseCode.SUCCESS)
+            }
+            else
+            {
+                return ResponseDTO(ResponseCode.NO_USER)
+            }
+        }
+        catch (e : Exception)
+        {
+            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
+        }
+    }
 }

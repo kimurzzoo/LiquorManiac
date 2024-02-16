@@ -16,6 +16,7 @@ enum class ResponseCode(val code: Int, val message: String) {
     REISSUE_BLOCKED(1041, "Your account is blocked."),
     REISSUE_NO_STATUS(1042, "There is no login status of you."),
     REISSUE_WRONG_STATUS(1043, "You have wrong login status."),
-
+    CHANGEPW_CUR_PW_NOT_MATCHED(1051, "Current password doesn't match to your current password."),
+    CHANGEPW_PASSWORD_NOT_CONFIRMED(1052, "Your password is not confirmed."),
     //
 }
