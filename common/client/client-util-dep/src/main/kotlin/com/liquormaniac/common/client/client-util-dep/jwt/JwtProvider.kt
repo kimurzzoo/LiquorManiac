@@ -15,7 +15,7 @@ import java.util.*
 @Component
 class JwtProvider(private val resourceLoader: ResourceLoader) {
 
-    @Value("auth.key.private")
+    @Value("\${auth.key.private}")
     private var privateKeyPath : String = ""
 
     private lateinit var privatekey : PrivateKey

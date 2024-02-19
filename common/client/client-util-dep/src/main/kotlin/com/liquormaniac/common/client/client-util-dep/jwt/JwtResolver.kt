@@ -12,7 +12,7 @@ import java.util.*
 
 @Component
 class JwtResolver(private val resourceLoader: ResourceLoader) {
-    @Value("auth.key.public")
+    @Value("\${auth.key.public}")
     private var publicKeyPath : String = ""
 
     private lateinit var publicKey : PublicKey
