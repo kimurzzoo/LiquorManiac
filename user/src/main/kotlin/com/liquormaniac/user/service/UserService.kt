@@ -11,7 +11,7 @@ import com.liquormaniac.common.domain.domain_user.repository.UserRepository
 import com.liquormaniac.user.dto.RegisterDTO
 import com.liquormaniac.common.domain.domain_user.entity.User
 import com.liquormaniac.common.domain.domain_user.entity.UserStatus
-import com.liquormaniac.common.domain.domain_user.repository.UserStatusRepository
+import com.liquormaniac.common.domain.domain_user.redis_repository.UserStatusRepository
 import com.liquormaniac.user.dto.LoginDTO
 import com.liquormaniac.user.dto.TokenDTO
 import io.jsonwebtoken.Claims

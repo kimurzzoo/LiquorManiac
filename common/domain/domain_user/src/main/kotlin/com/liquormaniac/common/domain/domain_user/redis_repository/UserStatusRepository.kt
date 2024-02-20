@@ -1,4 +1,4 @@
-package com.liquormaniac.common.domain.domain_user.repository
+package com.liquormaniac.common.domain.domain_user.redis_repository
 
 import com.liquormaniac.common.domain.domain_user.entity.UserStatus
 import org.springframework.data.repository.CrudRepository
