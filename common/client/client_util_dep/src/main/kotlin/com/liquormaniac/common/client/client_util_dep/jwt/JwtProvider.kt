@@ -18,13 +18,13 @@ class JwtProvider(private val resourceLoader: ResourceLoader) {
     @Value("\${auth.key.private}")
     private var privateKeyPath : String = ""
 
-    private lateinit var privatekey : PrivateKey
+    @Value("\${token.valid.access}")
+    private var accessTokenValidTime : Long = 0L
 
-    companion object
-    {
-        const val accessTokenValidTime = 30 * 60 * 1000L
-        const val refreshTokenValidTime = 7 * 24 * 60 * 60 * 1000L
-    }
+    @Value("\${token.valid.refresh}")
+    private var refreshTokenValidTime : Long = 0L
+
+    private lateinit var privatekey : PrivateKey
 
     private var realkey : Key? = null
 

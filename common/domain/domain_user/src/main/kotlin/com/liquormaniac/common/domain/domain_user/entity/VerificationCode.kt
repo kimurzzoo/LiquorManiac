@@ -4,8 +4,8 @@ import jakarta.persistence.Id
 import org.springframework.data.redis.core.RedisHash
 import org.springframework.data.redis.core.index.Indexed
 
-@RedisHash(value = "user_status", timeToLive = 7 * 24 * 60 * 60)
-class UserStatus(
-    @Id @Indexed val id : String, //refresh token
-    @Indexed val indicator: String,
-    @Indexed val email: String)
+@RedisHash(value = "user_status", timeToLive = 5 * 60)
+class VerificationCode(
+    @Id @Indexed val id : String, // email
+    @Indexed val code : String
+)

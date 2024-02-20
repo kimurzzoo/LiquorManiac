@@ -16,12 +16,17 @@ import com.liquormaniac.user.dto.LoginDTO
 import com.liquormaniac.user.dto.TokenDTO
 import io.jsonwebtoken.Claims
 import org.springframework.transaction.annotation.Isolation
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
+import com.liquormaniac.common.client.client_util_dep.random.verificationCodeGenerator
+import com.liquormaniac.common.domain.domain_user.entity.VerificationCode
+import com.liquormaniac.common.domain.domain_user.redis_repository.VerificationCodeRepository
 
 @Service
 class UserService(private val userRepository: UserRepository,
                   private val userStatusRepository: UserStatusRepository,
+                  private val verificationCodeRepository: VerificationCodeRepository,
                   private val bCryptPasswordEncoder: BCryptPasswordEncoder,
                   private val jwtProvider: JwtProvider,
                   private val jwtResolver: JwtResolver) {
@@ -130,6 +135,39 @@ class UserService(private val userRepository: UserRepository,
         }
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = [Exception::class])
+    fun sendVerificationMail(email: String) : ResponseDTO<Unit>
+    {
+        try {
+            val user : User? = userRepository.findByEmailAddress(email)
+            if(user == null)
+            {
+                return ResponseDTO(ResponseCode.NO_USER)
+            }
+
+            if(!user.enabled)
+            {
+                return ResponseDTO(ResponseCode.LOGIN_BLOCKED)
+            }
+
+            if(user.verified)
+            {
+                return ResponseDTO(ResponseCode.SENDVERIFICATIONMAIL_ALREADY_VERIFIED)
+            }
+
+            val code : String = verificationCodeGenerator(email)
+            val verificationCode = VerificationCode(email, code)
+
+            verificationCodeRepository.save(verificationCode)
+            // TODO 이메일 발송
+            return ResponseDTO(ResponseCode.SUCCESS)
+        }
+        catch (e : Exception)
+        {
+            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage = e.message)
+        }
+    }
+
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = [Exception::class])
     fun reissue(accessToken: String, refreshToken: String) : ResponseDTO<TokenDTO>
     {
@@ -179,65 +217,7 @@ class UserService(private val userRepository: UserRepository,
         }
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = [Exception::class])
-    fun block(userId : Long) : ResponseDTO<Unit>
-    {
-        try {
-            val userOptional : Optional<User> = userRepository.findById(userId)
-            if(userOptional.isEmpty)
-            {
-                return ResponseDTO(ResponseCode.NO_USER)
-            }
-
-            val user : User = userOptional.get()
-
-            if(!user.enabled)
-            {
-                return ResponseDTO(ResponseCode.BLOCK_ALREADY_BLOCKED)
-            }
-
-            user.enabled = false
-
-            userRepository.save(user)
-
-            return ResponseDTO(ResponseCode.SUCCESS)
-        }
-        catch (e : Exception)
-        {
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
-        }
-    }
-
-    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = [Exception::class])
-    fun unblock(userId : Long) : ResponseDTO<Unit>
-    {
-        try {
-            val userOptional : Optional<User> = userRepository.findById(userId)
-            if(userOptional.isEmpty)
-            {
-                return ResponseDTO(ResponseCode.NO_USER)
-            }
-
-            val user : User = userOptional.get()
-
-            if(user.enabled)
-            {
-                return ResponseDTO(ResponseCode.UNBLOCK_ALREADY_UNBLOCKED)
-            }
-
-            user.enabled = true
-
-            userRepository.save(user)
-
-            return ResponseDTO(ResponseCode.SUCCESS)
-        }
-        catch (e : Exception)
-        {
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
-        }
-    }
-
-    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = [Exception::class])
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED, rollbackFor = [Exception::class])
     fun changeRole(userId : Long, role : String) : ResponseDTO<Unit>
     {
         try {
@@ -306,6 +286,27 @@ class UserService(private val userRepository: UserRepository,
                 user.m_password = newPw
                 userRepository.save(user)
                 return ResponseDTO(ResponseCode.SUCCESS)
+            }
+            else
+            {
+                return ResponseDTO(ResponseCode.NO_USER)
+            }
+        }
+        catch (e : Exception)
+        {
+            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
+        }
+    }
+
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED, rollbackFor = [Exception::class])
+    fun isBlocked(email : String) : ResponseDTO<Boolean>
+    {
+        try {
+            val user : User? = userRepository.findByEmailAddress(email)
+
+            if(user != null)
+            {
+                return ResponseDTO(ResponseCode.SUCCESS, user.enabled)
             }
             else
             {
