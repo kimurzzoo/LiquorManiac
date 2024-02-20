@@ -97,7 +97,7 @@ class UserService(private val userRepository: UserRepository,
 
             if(!user.enabled)
             {
-                return ResponseDTO(ResponseCode.LOGIN_BLOCKED)
+                return ResponseDTO(ResponseCode.BLOCKED)
             }
 
             val indicator : String = UUID.randomUUID().toString()
@@ -151,7 +151,7 @@ class UserService(private val userRepository: UserRepository,
 
             if(!user.enabled)
             {
-                return ResponseDTO(ResponseCode.LOGIN_BLOCKED)
+                return ResponseDTO(ResponseCode.BLOCKED)
             }
 
             if(user.verified)
@@ -164,6 +164,51 @@ class UserService(private val userRepository: UserRepository,
 
             verificationCodeRepository.save(verificationCode)
             // TODO 이메일 발송
+            return ResponseDTO(ResponseCode.SUCCESS)
+        }
+        catch (e : Exception)
+        {
+            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage = e.message)
+        }
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = [Exception::class])
+    fun verification(email: String, code : String) : ResponseDTO<Unit>
+    {
+        try {
+            val user : User? = userRepository.findByEmailAddress(email)
+            if(user == null)
+            {
+                return ResponseDTO(ResponseCode.NO_USER)
+            }
+
+            if(!user.enabled)
+            {
+                return ResponseDTO(ResponseCode.BLOCKED)
+            }
+
+            if(user.verified)
+            {
+                return ResponseDTO(ResponseCode.VERIFICATION_ALREADY_VERIFIED)
+            }
+
+            val verificationCodeOptional = verificationCodeRepository.findById(email)
+            if(verificationCodeOptional == null)
+            {
+                return ResponseDTO(ResponseCode.VERIFICATION_CODE_EXPIRED)
+            }
+
+            val verificationCode = verificationCodeOptional.get()
+
+            if(verificationCode.code != code)
+            {
+                return ResponseDTO(ResponseCode.VERIFICATION_WRONG_CODE)
+            }
+
+            verificationCodeRepository.deleteById(email)
+            user.role = Role.ROLE_VERIFIED.toString()
+            userRepository.save(user)
+
             return ResponseDTO(ResponseCode.SUCCESS)
         }
         catch (e : Exception)
@@ -198,7 +243,7 @@ class UserService(private val userRepository: UserRepository,
 
                 if(!user.enabled)
                 {
-                    return ResponseDTO(ResponseCode.REISSUE_BLOCKED)
+                    return ResponseDTO(ResponseCode.BLOCKED)
                 }
 
                 val indicator : String = UUID.randomUUID().toString()
@@ -219,30 +264,6 @@ class UserService(private val userRepository: UserRepository,
         catch (e : Exception)
         {
             return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage = e.message)
-        }
-    }
-
-    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED, rollbackFor = [Exception::class])
-    fun changeRole(userId : Long, role : String) : ResponseDTO<Unit>
-    {
-        try {
-            val userOptional : Optional<User> = userRepository.findById(userId)
-            if(userOptional.isEmpty)
-            {
-                return ResponseDTO(ResponseCode.NO_USER)
-            }
-
-            val user : User = userOptional.get()
-
-            user.role = role
-
-            userRepository.save(user)
-
-            return ResponseDTO(ResponseCode.SUCCESS)
-        }
-        catch (e : Exception)
-        {
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
         }
     }
 

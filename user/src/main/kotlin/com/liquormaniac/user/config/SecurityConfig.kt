@@ -20,7 +20,7 @@ class SecurityConfig {
             .httpBasic{ httpBasic -> httpBasic.disable() }
             .formLogin { formLogin -> formLogin.disable() }
             .sessionManagement { sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .authorizeHttpRequests { authorizeHttpRequests -> authorizeHttpRequests.requestMatchers("/**").permitAll() } // TODO 변경해야됨
+            .authorizeHttpRequests { authorizeHttpRequests -> authorizeHttpRequests.anyRequest().permitAll() } // TODO 변경해야됨
             // TODO 필터 추가
 
         return http.build()

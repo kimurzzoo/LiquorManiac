@@ -9,7 +9,6 @@ import com.liquormaniac.user.service.UserService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.jetbrains.annotations.NotNull
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -58,6 +57,21 @@ class UserController(private val userService: UserService) {
                 @RequestHeader(name = "refreshToken") refreshToken : String) : ResponseDTO<Unit>
     {
         return userService.logout(email, refreshToken)
+    }
+
+    @Operation(summary = "인증 코드 메일 전송", description = "인증 코드 메일 전송 API")
+    @GetMapping("/sendVerificationMail")
+    fun sendVerificationMail(@RequestHeader(name = "X-User-Email") email: String) : ResponseDTO<Unit>
+    {
+        return userService.sendVerificationMail(email)
+    }
+
+    @Operation(summary = "코드 인증", description = "코드 인증 API")
+    @GetMapping("/verification")
+    fun verification(@RequestHeader(name = "X-User-Email") email: String,
+                     @RequestParam(name = "code", required = true) @Schema(description = "인증 코드") code : String) : ResponseDTO<Unit>
+    {
+        return userService.verification(email, code)
     }
 
     @Operation(summary = "닉네임 변경", description = "닉네임 변경 API")

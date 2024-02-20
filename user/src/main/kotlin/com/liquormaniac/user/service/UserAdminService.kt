@@ -7,6 +7,7 @@ import com.liquormaniac.common.domain.domain_user.redis_repository.UserStatusRep
 import com.liquormaniac.common.domain.domain_user.repository.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
@@ -62,6 +63,30 @@ class UserAdminService(private val userRepository: UserRepository,
             }
 
             user.enabled = true
+
+            userRepository.save(user)
+
+            return ResponseDTO(ResponseCode.SUCCESS)
+        }
+        catch (e : Exception)
+        {
+            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED, rollbackFor = [Exception::class])
+    fun changeRole(userId : Long, role : String) : ResponseDTO<Unit>
+    {
+        try {
+            val userOptional : Optional<User> = userRepository.findById(userId)
+            if(userOptional.isEmpty)
+            {
+                return ResponseDTO(ResponseCode.NO_USER)
+            }
+
+            val user : User = userOptional.get()
+
+            user.role = role
 
             userRepository.save(user)
 
