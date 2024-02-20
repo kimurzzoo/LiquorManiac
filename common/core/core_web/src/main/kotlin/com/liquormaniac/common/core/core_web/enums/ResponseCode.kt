@@ -18,6 +18,7 @@ enum class ResponseCode(val code: Int, val message: String) {
     REISSUE_WRONG_STATUS(1043, "You have wrong login status."),
     CHANGEPW_CUR_PW_NOT_MATCHED(1051, "Current password doesn't match to your current password."),
     CHANGEPW_PASSWORD_NOT_CONFIRMED(1052, "Your password is not confirmed."),
-    SENDVERIFICATIONMAIL_ALREADY_VERIFIED(1061, "You are already verified.")
+    SENDVERIFICATIONMAIL_ALREADY_VERIFIED(1061, "You are already verified."),
+    LOGOUT_WRONG_REFRESH_TOKEN(1071, "Your refresh token is wrong."),
     //
 }

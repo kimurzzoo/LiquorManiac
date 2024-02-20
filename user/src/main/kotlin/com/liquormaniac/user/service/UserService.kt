@@ -115,8 +115,8 @@ class UserService(private val userRepository: UserRepository,
         }
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = [Exception::class])
-    fun logout(refreshToken: String) : ResponseDTO<Unit>
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED, rollbackFor = [Exception::class])
+    fun logout(email: String, refreshToken: String) : ResponseDTO<Unit>
     {
         try
         {
@@ -125,6 +125,10 @@ class UserService(private val userRepository: UserRepository,
             val userStatus: UserStatus? = userStatusRepository.findByIdAndIndicator(refreshToken, indicator)
             if(userStatus != null)
             {
+                if(userStatus.email != email)
+                {
+                    return ResponseDTO(ResponseCode.LOGOUT_WRONG_REFRESH_TOKEN)
+                }
                 userStatusRepository.deleteById(refreshToken)
             }
             return ResponseDTO(ResponseCode.SUCCESS)
@@ -199,12 +203,13 @@ class UserService(private val userRepository: UserRepository,
 
                 val indicator : String = UUID.randomUUID().toString()
 
-                val accessToken : String = jwtProvider.createAccessToken(user.emailAddress, indicator, user.role)
-                val refreshToken : String = jwtProvider.createRefreshToken(indicator)
+                val newAccessToken : String = jwtProvider.createAccessToken(user.emailAddress, indicator, user.role)
+                val newRefreshToken : String = jwtProvider.createRefreshToken(indicator)
 
-                userStatusRepository.save(UserStatus(refreshToken, indicator, user.emailAddress))
+                userStatusRepository.deleteById(refreshToken)
+                userStatusRepository.save(UserStatus(newRefreshToken, indicator, user.emailAddress))
 
-                return ResponseDTO(ResponseCode.SUCCESS)
+                return ResponseDTO(ResponseCode.SUCCESS, TokenDTO(newAccessToken, newRefreshToken))
             }
             else
             {
@@ -265,7 +270,7 @@ class UserService(private val userRepository: UserRepository,
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = [Exception::class])
-    fun changePw(email : String, curPw : String, newPw : String, newPwConfirm : String) : ResponseDTO<Unit>
+    fun changePw(email : String, refreshToken: String, curPw : String, newPw : String, newPwConfirm : String) : ResponseDTO<Unit>
     {
         try {
             val user : User? = userRepository.findByEmailAddress(email)
@@ -285,6 +290,7 @@ class UserService(private val userRepository: UserRepository,
                 //pw regex 추가
                 user.m_password = newPw
                 userRepository.save(user)
+                logout(email, refreshToken)
                 return ResponseDTO(ResponseCode.SUCCESS)
             }
             else
