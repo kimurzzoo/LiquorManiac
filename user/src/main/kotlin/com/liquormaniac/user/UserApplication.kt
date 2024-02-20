@@ -1,17 +1,36 @@
 package com.liquormaniac.user
 
+import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.runApplication
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
+import org.springframework.context.ApplicationContext
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 
+@SpringBootApplication(scanBasePackages = [
+	"com.liquormaniac.common.core.core_web",
+	"com.liquormaniac.common.domain.domain_user",
+	"com.liquormaniac.common.client.client_util_dep",
+	"com.liquormaniac.common.others.redis_config",
+	"com.liquormaniac.user",])
+@EntityScan(basePackages = ["com.liquormaniac.common.domain.domain_user.entity"])
 @EnableJpaAuditing
-@SpringBootApplication(scanBasePackages = ["com.liquormaniac.common.core.core-web",
-	"com.liquormaniac.common.domain.domain-user",
-	"com.liquormaniac.common.client.client-util-dep",
-	"com.liquormaniac.common.others.redis-config"])
-class UserApplication
+class UserApplication(private val ac : ApplicationContext) : SpringBootServletInitializer(),CommandLineRunner
+{
 
+
+	override fun run(vararg args: String?) {
+		val beanDefinitionNames = ac.beanDefinitionNames
+
+		for (beanDefinitionName in beanDefinitionNames) {
+			val bean = ac.getBean(beanDefinitionName)
+			println("name = ${beanDefinitionName} + object = ${bean}")
+		}
+	}
+}
 fun main(args: Array<String>) {
 	runApplication<UserApplication>(*args)
 }
+
+

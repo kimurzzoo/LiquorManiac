@@ -1,8 +1,8 @@
 package com.liquormaniac.user.service
 
 import org.springframework.stereotype.Service
-import com.liquormaniac.common.domain.`domain-user`.repository.UserRepository
-import com.liquormaniac.common.domain.`domain-user`.entity.User
+import com.liquormaniac.common.domain.domain_user.repository.UserRepository
+import com.liquormaniac.common.domain.domain_user.entity.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 

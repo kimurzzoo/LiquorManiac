@@ -1,6 +1,6 @@
 package com.liquormaniac.user.controller
 
-import com.liquormaniac.common.core.`core-web`.dto.ResponseDTO
+import com.liquormaniac.common.core.core_web.dto.ResponseDTO
 import com.liquormaniac.user.dto.RegisterDTO
 import com.liquormaniac.user.service.UserService
 import org.springframework.web.bind.annotation.PostMapping
