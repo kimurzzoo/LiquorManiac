@@ -35,7 +35,12 @@ class UserAdminService(private val userRepository: UserRepository,
             user.enabled = false
 
             userRepository.save(user)
-            userStatusRepository.deleteByEmail(user.emailAddress)
+
+            val userStatus = userStatusRepository.findByEmail(user.emailAddress)
+            if(userStatus.isNotEmpty())
+            {
+                userStatusRepository.deleteAll(userStatus)
+            }
 
             return ResponseDTO(ResponseCode.SUCCESS)
         }

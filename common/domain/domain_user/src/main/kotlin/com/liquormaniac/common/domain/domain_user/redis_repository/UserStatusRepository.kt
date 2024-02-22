@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository
 interface UserStatusRepository : CrudRepository<UserStatus, String> {
     fun findByIdAndIndicator(refreshToken: String, indicator: String) : UserStatus?
 
-    fun deleteByEmail(email: String)
+    fun findByEmail(email: String) : List<UserStatus?>
 }

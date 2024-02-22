@@ -69,7 +69,12 @@ class UserService(private val userRepository: UserRepository,
             else
             {
                 userRepository.delete(user)
-                userStatusRepository.deleteByEmail(email)
+
+                val userStatus = userStatusRepository.findByEmail(email)
+                if(userStatus.size > 0)
+                {
+                    userStatusRepository.deleteAll(userStatus)
+                }
                 return ResponseDTO(ResponseCode.SUCCESS)
             }
         }
@@ -308,7 +313,7 @@ class UserService(private val userRepository: UserRepository,
                     return ResponseDTO(ResponseCode.CHANGEPW_PASSWORD_NOT_CONFIRMED)
                 }
 
-                //pw regex 추가
+                // TODO pw regex 추가
                 user.m_password = newPw
                 userRepository.save(user)
                 logout(email, refreshToken)
