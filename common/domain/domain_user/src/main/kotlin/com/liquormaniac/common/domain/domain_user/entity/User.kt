@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails
 
 @Entity
 @Table(name="user")
-class User(nickname : String, emailAddress : String, m_password : String, role : String) : UserDetails, BaseEntity() {
+class User(nickname : String, emailAddress : String, m_password : String, role : String, country : Long) : UserDetails, BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -25,6 +25,9 @@ class User(nickname : String, emailAddress : String, m_password : String, role :
 
     @Column(name = "role", columnDefinition = "varchar(200)", nullable = false)
     var role : String = role
+
+    @Column(name = "country", columnDefinition = "bigint", nullable = false)
+    var country : Long = country
 
     @Column(name = "enabled", nullable = false)
     var enabled : Boolean = true

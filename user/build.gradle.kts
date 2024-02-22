@@ -13,7 +13,3 @@ dependencies {
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:+")
 	testImplementation("org.springframework.kafka:spring-kafka-test")
 }
-
-tasks.withType<Test> {
-	useJUnitPlatform()
-}

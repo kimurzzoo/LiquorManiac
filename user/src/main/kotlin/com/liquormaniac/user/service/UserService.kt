@@ -47,7 +47,7 @@ class UserService(private val userRepository: UserRepository,
 
             //email regex, pw regex 추가
 
-            userRepository.save(User(registerInfo.nickName, registerInfo.emailAddress, bCryptPasswordEncoder.encode(registerInfo.password), Role.ROLE_USER.toString()))
+            userRepository.save(User(registerInfo.nickName, registerInfo.emailAddress, bCryptPasswordEncoder.encode(registerInfo.password), Role.ROLE_USER.toString(), registerInfo.country))
 
             return ResponseDTO(ResponseCode.SUCCESS)
         }
@@ -212,6 +212,7 @@ class UserService(private val userRepository: UserRepository,
 
             verificationCodeRepository.deleteById(email)
             user.role = Role.ROLE_VERIFIED.toString()
+            user.verified = true
             userRepository.save(user)
 
             return ResponseDTO(ResponseCode.SUCCESS)
@@ -317,6 +318,29 @@ class UserService(private val userRepository: UserRepository,
                 user.m_password = newPw
                 userRepository.save(user)
                 logout(email, refreshToken)
+                return ResponseDTO(ResponseCode.SUCCESS)
+            }
+            else
+            {
+                return ResponseDTO(ResponseCode.NO_USER)
+            }
+        }
+        catch (e : Exception)
+        {
+            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
+        }
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = [Exception::class])
+    fun changeCountry(email : String, countryId : Long) : ResponseDTO<Unit>
+    {
+        try {
+            val user : User? = userRepository.findByEmailAddress(email)
+
+            if(user != null)
+            {
+                user.country = countryId
+                userRepository.save(user)
                 return ResponseDTO(ResponseCode.SUCCESS)
             }
             else

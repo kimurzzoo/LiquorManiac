@@ -38,7 +38,7 @@ class UserServiceTest {
     @BeforeEach
     fun test_user()
     {
-        val registerDTO : RegisterDTO = RegisterDTO("kimurzzoo@gmail.com", "159456789", "159456789", "달쌈")
+        val registerDTO : RegisterDTO = RegisterDTO("kimurzzoo@gmail.com", "159456789", "159456789", "달쌈", 1L)
         val response = userService.register(registerDTO)
     }
 
@@ -46,7 +46,7 @@ class UserServiceTest {
     @Transactional
     fun test_register()
     {
-        val registerDTO : RegisterDTO = RegisterDTO("kimurzzzoo@gmail.com", "q1w2e3r4", "q1w2e3r4", "별쌈")
+        val registerDTO : RegisterDTO = RegisterDTO("kimurzzzoo@gmail.com", "q1w2e3r4", "q1w2e3r4", "별쌈", 2L)
         val response = userService.register(registerDTO)
         Assertions.assertEquals(200, response.code)
 

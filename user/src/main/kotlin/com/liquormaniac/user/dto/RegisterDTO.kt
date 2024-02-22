@@ -13,4 +13,8 @@ data class RegisterDTO(
     val passwordConfirm : String,
 
     @Schema(description = "닉네임")
-    val nickName: String)
+    val nickName: String,
+
+    @Schema(description = "국가")
+    val country: Long
+)

@@ -3,12 +3,11 @@ plugins {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	api(project(":common:domain:domain_liquor"))
+	api(project(":common:core:core_web"))
+	api(project(":common:core:core_liquor"))
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.springframework.kafka:spring-kafka")
-	runtimeOnly("com.mysql:mysql-connector-j")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:+")
 	testImplementation("org.springframework.kafka:spring-kafka-test")
 }
