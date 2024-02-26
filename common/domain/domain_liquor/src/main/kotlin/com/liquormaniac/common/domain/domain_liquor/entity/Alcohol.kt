@@ -5,7 +5,7 @@ import java.util.*
 
 @Entity
 @Table(name="alcohol")
-class Alcohol(name : String, type : Long, abv : Double, isYeast : Boolean = false, releaseDate : Date? = null, country : Long, releaseCompany : Long) {
+class Alcohol(name : String, alcoholType : Long, abv : Double, isYeast : Boolean = false, releaseDate : Date? = null, country : Long, releaseCompany : Long) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -14,8 +14,8 @@ class Alcohol(name : String, type : Long, abv : Double, isYeast : Boolean = fals
     @Column(name = "name", columnDefinition = "varchar(100)", nullable = false)
     var name : String = name
 
-    @Column(name = "type", columnDefinition = "bigint", nullable = false)
-    var type : Long = type
+    @Column(name = "alcohol_type", columnDefinition = "bigint", nullable = false)
+    var alcoholType : Long = alcoholType
 
     @Column(name = "abv", columnDefinition = "double", nullable = false)
     var abv : Double = abv
