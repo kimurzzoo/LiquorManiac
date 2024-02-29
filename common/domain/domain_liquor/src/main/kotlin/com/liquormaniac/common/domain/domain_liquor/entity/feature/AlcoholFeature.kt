@@ -13,7 +13,7 @@ class AlcoholFeature(alcoholId: Long, userId: Long, acidity : Byte, bitterness :
     @Column(name = "alcohol_id", columnDefinition = "bigint", nullable = false)
     var alcoholId : Long = alcoholId
 
-    @Column(name = "user_id", columnDefinition = "bigint", unique = true, nullable = false)
+    @Column(name = "user_id", columnDefinition = "bigint", nullable = false)
     var userId : Long = userId
 
     @Column(name = "acidity", columnDefinition = "tinyint", nullable = false)
