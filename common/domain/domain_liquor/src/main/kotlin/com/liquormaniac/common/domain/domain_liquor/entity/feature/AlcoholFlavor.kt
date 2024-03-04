@@ -1,10 +1,11 @@
 package com.liquormaniac.common.domain.domain_liquor.entity.feature
 
+import com.liquormaniac.common.domain.domain_core.entity.BaseEntity
 import jakarta.persistence.*
 
 @Entity
 @Table(name="alcohol_flavor")
-class AlcoholFlavor(alcoholFeatureId : Long, name : String) {
+class AlcoholFlavor(alcoholFeatureId : Long, name : String) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

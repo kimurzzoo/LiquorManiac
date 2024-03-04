@@ -10,7 +10,7 @@ import com.liquormaniac.common.core.core_web.enums.Role
 import com.liquormaniac.common.domain.domain_user.repository.UserRepository
 import com.liquormaniac.user.dto.RegisterDTO
 import com.liquormaniac.common.domain.domain_user.entity.User
-import com.liquormaniac.common.domain.domain_user.entity.UserStatus
+import com.liquormaniac.common.domain.domain_user.redis_entity.UserStatus
 import com.liquormaniac.common.domain.domain_user.redis_repository.UserStatusRepository
 import com.liquormaniac.user.dto.LoginDTO
 import com.liquormaniac.user.dto.TokenDTO
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
 import com.liquormaniac.common.client.client_util_dep.random.verificationCodeGenerator
-import com.liquormaniac.common.domain.domain_user.entity.VerificationCode
+import com.liquormaniac.common.domain.domain_user.redis_entity.VerificationCode
 import com.liquormaniac.common.domain.domain_user.redis_repository.VerificationCodeRepository
 
 @Service
@@ -70,8 +70,10 @@ class UserService(private val userRepository: UserRepository,
             {
                 userRepository.delete(user)
 
+                //TODO 다른 서비스들에서 유저 관련 데이터 전부 삭제
+
                 val userStatus = userStatusRepository.findByEmail(email)
-                if(userStatus.size > 0)
+                if(userStatus.isNotEmpty())
                 {
                     userStatusRepository.deleteAll(userStatus)
                 }
@@ -89,11 +91,8 @@ class UserService(private val userRepository: UserRepository,
     {
         try
         {
-            val user : User? = userRepository.findByEmailAddress(loginInfo.emailAddress)
-            if(user == null)
-            {
-                return ResponseDTO(ResponseCode.NO_USER)
-            }
+            val user : User = userRepository.findByEmailAddress(loginInfo.emailAddress)
+                ?: return ResponseDTO(ResponseCode.NO_USER)
 
             if(!bCryptPasswordEncoder.matches(loginInfo.password, user.m_password))
             {
@@ -148,11 +147,7 @@ class UserService(private val userRepository: UserRepository,
     fun sendVerificationMail(email: String) : ResponseDTO<Unit>
     {
         try {
-            val user : User? = userRepository.findByEmailAddress(email)
-            if(user == null)
-            {
-                return ResponseDTO(ResponseCode.NO_USER)
-            }
+            val user : User = userRepository.findByEmailAddress(email) ?: return ResponseDTO(ResponseCode.NO_USER)
 
             if(!user.enabled)
             {
@@ -167,8 +162,9 @@ class UserService(private val userRepository: UserRepository,
             val code : String = verificationCodeGenerator(email)
             val verificationCode = VerificationCode(email, code)
 
-            verificationCodeRepository.save(verificationCode)
             // TODO 이메일 발송
+
+            verificationCodeRepository.save(verificationCode)
             return ResponseDTO(ResponseCode.SUCCESS)
         }
         catch (e : Exception)
@@ -181,11 +177,7 @@ class UserService(private val userRepository: UserRepository,
     fun verification(email: String, code : String) : ResponseDTO<Unit>
     {
         try {
-            val user : User? = userRepository.findByEmailAddress(email)
-            if(user == null)
-            {
-                return ResponseDTO(ResponseCode.NO_USER)
-            }
+            val user : User = userRepository.findByEmailAddress(email) ?: return ResponseDTO(ResponseCode.NO_USER)
 
             if(!user.enabled)
             {
@@ -198,7 +190,7 @@ class UserService(private val userRepository: UserRepository,
             }
 
             val verificationCodeOptional = verificationCodeRepository.findById(email)
-            if(verificationCodeOptional == null)
+            if(verificationCodeOptional.isEmpty)
             {
                 return ResponseDTO(ResponseCode.VERIFICATION_CODE_EXPIRED)
             }
@@ -210,11 +202,10 @@ class UserService(private val userRepository: UserRepository,
                 return ResponseDTO(ResponseCode.VERIFICATION_WRONG_CODE)
             }
 
-            verificationCodeRepository.deleteById(email)
             user.role = Role.ROLE_VERIFIED.toString()
             user.verified = true
             userRepository.save(user)
-
+            verificationCodeRepository.deleteById(email)
             return ResponseDTO(ResponseCode.SUCCESS)
         }
         catch (e : Exception)

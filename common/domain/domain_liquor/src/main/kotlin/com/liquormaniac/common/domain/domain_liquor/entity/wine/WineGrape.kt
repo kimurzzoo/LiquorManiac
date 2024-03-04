@@ -1,10 +1,11 @@
 package com.liquormaniac.common.domain.domain_liquor.entity.wine
 
+import com.liquormaniac.common.domain.domain_core.entity.BaseEntity
 import jakarta.persistence.*
 
 @Entity
 @Table(name="wine_grape")
-class WineGrape(wineId : Long, grapeId : Long, grapeHarvestYear : Short, soilId : Long, location : String) {
+class WineGrape(wineId : Long, grapeId : Long, grapeHarvestYear : Short, soilId : Long, location : String) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

@@ -1,11 +1,11 @@
-package com.liquormaniac.common.domain.domain_liquor.entity.feature.wine
+package com.liquormaniac.common.domain.domain_liquor.entity.feature.whiskey
 
 import com.liquormaniac.common.domain.domain_core.entity.BaseEntity
 import jakarta.persistence.*
 
 @Entity
-@Table(name="wine_feature")
-class WineFeature(alcoholFeatureId : Long, tannin : Byte) : BaseEntity() {
+@Table(name="whiskey_feature")
+class WhiskeyFeature(alcoholFeatureId : Long, smokey : Byte) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -14,6 +14,6 @@ class WineFeature(alcoholFeatureId : Long, tannin : Byte) : BaseEntity() {
     @Column(name = "alcohol_feature_id", columnDefinition = "bigint", nullable = false)
     var alcoholFeatureId : Long = alcoholFeatureId
 
-    @Column(name = "tannin", columnDefinition = "tinyint", nullable = false)
-    var tannin : Byte = tannin
+    @Column(name = "smokey", columnDefinition = "tinyint", nullable = false)
+    var smokey : Byte = smokey
 }

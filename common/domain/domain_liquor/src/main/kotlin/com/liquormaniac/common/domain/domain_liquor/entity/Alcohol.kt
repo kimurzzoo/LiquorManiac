@@ -1,11 +1,12 @@
 package com.liquormaniac.common.domain.domain_liquor.entity
 
+import com.liquormaniac.common.domain.domain_core.entity.BaseEntity
 import jakarta.persistence.*
 import java.util.*
 
 @Entity
 @Table(name="alcohol")
-class Alcohol(name : String, alcoholType : Long, abv : Double, isYeast : Boolean = false, releaseDate : Date? = null, country : Long, releaseCompany : Long) {
+class Alcohol(name : String, alcoholType : Long, abv : Double, isYeast : Boolean = false, releaseDate : Date? = null, country : Long, releaseCompany : Long, isSelling : Boolean = true) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -31,4 +32,7 @@ class Alcohol(name : String, alcoholType : Long, abv : Double, isYeast : Boolean
 
     @Column(name = "release_company", columnDefinition = "bigint", nullable = false)
     var releaseCompany : Long = releaseCompany
+
+    @Column(name = "is_selling", nullable = false)
+    var isSelling : Boolean = isSelling
 }
