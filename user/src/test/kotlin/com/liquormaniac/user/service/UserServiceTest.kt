@@ -6,14 +6,12 @@ import com.liquormaniac.common.domain.domain_user.redis_repository.VerificationC
 import com.liquormaniac.common.domain.domain_user.repository.UserRepository
 import com.liquormaniac.user.dto.LoginDTO
 import com.liquormaniac.user.dto.RegisterDTO
-import com.liquormaniac.user.service.UserService
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
 
 @SpringBootTest
 class UserServiceTest {

@@ -4,13 +4,12 @@ plugins {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	api(project(":common:domain:domain_chat"))
+	api(project(":common:core:core_web"))
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-websocket")
-	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.springframework.kafka:spring-kafka")
-	runtimeOnly("com.mysql:mysql-connector-j")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:+")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.kafka:spring-kafka-test")
 }

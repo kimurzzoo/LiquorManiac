@@ -10,7 +10,7 @@ import com.liquormaniac.common.core.core_web.enums.Role
 import com.liquormaniac.common.domain.domain_user.repository.UserRepository
 import com.liquormaniac.user.dto.RegisterDTO
 import com.liquormaniac.common.domain.domain_user.entity.User
-import com.liquormaniac.common.domain.domain_user.redis_entity.UserStatus
+import com.liquormaniac.common.domain.domain_user.entity.UserStatus
 import com.liquormaniac.common.domain.domain_user.redis_repository.UserStatusRepository
 import com.liquormaniac.user.dto.LoginDTO
 import com.liquormaniac.user.dto.TokenDTO
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
 import com.liquormaniac.common.client.client_util_dep.random.verificationCodeGenerator
-import com.liquormaniac.common.domain.domain_user.redis_entity.VerificationCode
+import com.liquormaniac.common.domain.domain_user.entity.VerificationCode
 import com.liquormaniac.common.domain.domain_user.redis_repository.VerificationCodeRepository
 
 @Service

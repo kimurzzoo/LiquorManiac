@@ -1,4 +1,4 @@
-package com.liquormaniac.common.domain.domain_user.redis_entity
+package com.liquormaniac.common.domain.domain_user.entity
 
 import jakarta.persistence.Id
 import org.springframework.data.redis.core.RedisHash
