@@ -58,10 +58,10 @@ class UserService(private val userRepository: UserRepository,
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = [Exception::class] )
-    fun withdrawal(email: String) : ResponseDTO<Unit>
+    fun withdrawal(userId: Long) : ResponseDTO<Unit>
     {
         try {
-            val user : User? = userRepository.findByEmailAddress(email)
+            val user : User? = userRepository.findById(userId).orElse(null)
             if(user == null)
             {
                 return ResponseDTO(ResponseCode.NO_USER)
@@ -72,7 +72,7 @@ class UserService(private val userRepository: UserRepository,
 
                 //TODO 다른 서비스들에서 유저 관련 데이터 전부 삭제
 
-                val userStatus = userStatusRepository.findByEmail(email)
+                val userStatus = userStatusRepository.findByEmail(user.emailAddress)
                 if(userStatus.isNotEmpty())
                 {
                     userStatusRepository.deleteAll(userStatus)
@@ -120,16 +120,22 @@ class UserService(private val userRepository: UserRepository,
     }
 
     @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED, rollbackFor = [Exception::class])
-    fun logout(email: String, refreshToken: String) : ResponseDTO<Unit>
+    fun logout(userId: Long, refreshToken: String) : ResponseDTO<Unit>
     {
         try
         {
+            val user : User? = userRepository.findById(userId).orElse(null)
+            if(user == null)
+            {
+                return ResponseDTO(ResponseCode.NO_USER)
+            }
+
             val claims: Claims = jwtResolver.getClaims(refreshToken)
             val indicator: String = claims.subject
             val userStatus: UserStatus? = userStatusRepository.findByIdAndIndicator(refreshToken, indicator)
             if(userStatus != null)
             {
-                if(userStatus.email != email)
+                if(userStatus.email != user.emailAddress)
                 {
                     return ResponseDTO(ResponseCode.LOGOUT_WRONG_REFRESH_TOKEN)
                 }
@@ -144,10 +150,10 @@ class UserService(private val userRepository: UserRepository,
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = [Exception::class])
-    fun sendVerificationMail(email: String) : ResponseDTO<Unit>
+    fun sendVerificationMail(userId: Long) : ResponseDTO<Unit>
     {
         try {
-            val user : User = userRepository.findByEmailAddress(email) ?: return ResponseDTO(ResponseCode.NO_USER)
+            val user : User = userRepository.findById(userId).orElse(null) ?: return ResponseDTO(ResponseCode.NO_USER)
 
             if(!user.enabled)
             {
@@ -159,8 +165,8 @@ class UserService(private val userRepository: UserRepository,
                 return ResponseDTO(ResponseCode.SENDVERIFICATIONMAIL_ALREADY_VERIFIED)
             }
 
-            val code : String = verificationCodeGenerator(email)
-            val verificationCode = VerificationCode(email, code)
+            val code : String = verificationCodeGenerator(user.emailAddress)
+            val verificationCode = VerificationCode(user.emailAddress, code)
 
             // TODO 이메일 발송
 
@@ -174,10 +180,10 @@ class UserService(private val userRepository: UserRepository,
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = [Exception::class])
-    fun verification(email: String, code : String) : ResponseDTO<Unit>
+    fun verification(userId: Long, code : String) : ResponseDTO<Unit>
     {
         try {
-            val user : User = userRepository.findByEmailAddress(email) ?: return ResponseDTO(ResponseCode.NO_USER)
+            val user : User = userRepository.findById(userId).orElse(null) ?: return ResponseDTO(ResponseCode.NO_USER)
 
             if(!user.enabled)
             {
@@ -189,7 +195,7 @@ class UserService(private val userRepository: UserRepository,
                 return ResponseDTO(ResponseCode.VERIFICATION_ALREADY_VERIFIED)
             }
 
-            val verificationCodeOptional = verificationCodeRepository.findById(email)
+            val verificationCodeOptional = verificationCodeRepository.findById(user.emailAddress)
             if(verificationCodeOptional.isEmpty)
             {
                 return ResponseDTO(ResponseCode.VERIFICATION_CODE_EXPIRED)
@@ -205,7 +211,7 @@ class UserService(private val userRepository: UserRepository,
             user.role = Role.ROLE_VERIFIED.toString()
             user.verified = true
             userRepository.save(user)
-            verificationCodeRepository.deleteById(email)
+            verificationCodeRepository.deleteById(user.emailAddress)
             return ResponseDTO(ResponseCode.SUCCESS)
         }
         catch (e : Exception)
@@ -265,10 +271,10 @@ class UserService(private val userRepository: UserRepository,
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = [Exception::class])
-    fun changeNickname(email : String, newNickname : String) : ResponseDTO<Unit>
+    fun changeNickname(userId : Long, newNickname : String) : ResponseDTO<Unit>
     {
         try {
-            val user : User? = userRepository.findByEmailAddress(email)
+            val user : User? = userRepository.findById(userId).orElse(null)
 
             if(user != null)
             {
@@ -288,10 +294,10 @@ class UserService(private val userRepository: UserRepository,
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = [Exception::class])
-    fun changePw(email : String, refreshToken: String, curPw : String, newPw : String, newPwConfirm : String) : ResponseDTO<Unit>
+    fun changePw(userId : Long, refreshToken: String, curPw : String, newPw : String, newPwConfirm : String) : ResponseDTO<Unit>
     {
         try {
-            val user : User? = userRepository.findByEmailAddress(email)
+            val user : User? = userRepository.findById(userId).orElse(null)
 
             if(user != null)
             {
@@ -308,7 +314,7 @@ class UserService(private val userRepository: UserRepository,
                 // TODO pw regex 추가
                 user.m_password = newPw
                 userRepository.save(user)
-                logout(email, refreshToken)
+                logout(userId, refreshToken)
                 return ResponseDTO(ResponseCode.SUCCESS)
             }
             else
@@ -323,10 +329,10 @@ class UserService(private val userRepository: UserRepository,
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = [Exception::class])
-    fun changeCountry(email : String, countryId : Long) : ResponseDTO<Unit>
+    fun changeCountry(userId : Long, countryId : Long) : ResponseDTO<Unit>
     {
         try {
-            val user : User? = userRepository.findByEmailAddress(email)
+            val user : User? = userRepository.findById(userId).orElse(null)
 
             if(user != null)
             {
@@ -346,10 +352,10 @@ class UserService(private val userRepository: UserRepository,
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED, rollbackFor = [Exception::class])
-    fun isBlocked(email : String) : ResponseDTO<Boolean>
+    fun isBlocked(userId : Long) : ResponseDTO<Boolean>
     {
         try {
-            val user : User? = userRepository.findByEmailAddress(email)
+            val user : User? = userRepository.findById(userId).orElse(null)
 
             if(user != null)
             {

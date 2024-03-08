@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class ChatConsumer {
-    @KafkaListener(topics = ["chat"], groupId = "chat") //TODO group id 바꾸고 topic도 적절하게 변경하기
+    @KafkaListener(id = "chat_message_listener", topics = ["chat"]) //TODO group id 바꾸고 topic도 적절하게 변경하기
     fun listener(data: Any?) {
         println(data)
     }

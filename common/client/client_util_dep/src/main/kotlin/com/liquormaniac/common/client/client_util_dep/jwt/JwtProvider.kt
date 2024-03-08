@@ -42,8 +42,8 @@ class JwtProvider(private val resourceLoader: ResourceLoader) {
         }
     }
 
-    fun createAccessToken(username : String, indicator: String, role : String): String {
-        val claims: Claims = Jwts.claims().setSubject(username) // JWT payload 에 저장되는 정보단위
+    fun createAccessToken(userId : Long, indicator: String, role : String): String {
+        val claims: Claims = Jwts.claims().setSubject(userId.toString()) // JWT payload 에 저장되는 정보단위
         claims["indicator"] = indicator
         claims["role"] = role
         val now = Date()

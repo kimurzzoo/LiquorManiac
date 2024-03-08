@@ -46,48 +46,48 @@ class UserController(private val userService: UserService) {
 
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴 API")
     @GetMapping("/withdrawal")
-    fun withdrawal(@RequestHeader(name = "X-User-Email") email: String) : ResponseDTO<Unit>
+    fun withdrawal(@RequestHeader(name = "X-User-Id") userId: Long) : ResponseDTO<Unit>
     {
-        return userService.withdrawal(email)
+        return userService.withdrawal(userId)
     }
 
     @Operation(summary = "로그아웃", description = "로그아웃 API")
     @GetMapping("/logout")
-    fun logout(@RequestHeader(name = "X-User-Email") email: String,
+    fun logout(@RequestHeader(name = "X-User-Id") userId: Long,
                 @RequestHeader(name = "refreshToken") refreshToken : String) : ResponseDTO<Unit>
     {
-        return userService.logout(email, refreshToken)
+        return userService.logout(userId, refreshToken)
     }
 
     @Operation(summary = "인증 코드 메일 전송", description = "인증 코드 메일 전송 API")
     @GetMapping("/sendVerificationMail")
-    fun sendVerificationMail(@RequestHeader(name = "X-User-Email") email: String) : ResponseDTO<Unit>
+    fun sendVerificationMail(@RequestHeader(name = "X-User-Id") userId: Long) : ResponseDTO<Unit>
     {
-        return userService.sendVerificationMail(email)
+        return userService.sendVerificationMail(userId)
     }
 
     @Operation(summary = "코드 인증", description = "코드 인증 API")
     @GetMapping("/verification")
-    fun verification(@RequestHeader(name = "X-User-Email") email: String,
+    fun verification(@RequestHeader(name = "X-User-Id") userId: Long,
                      @RequestParam(name = "code", required = true) @Schema(description = "인증 코드") code : String) : ResponseDTO<Unit>
     {
-        return userService.verification(email, code)
+        return userService.verification(userId, code)
     }
 
     @Operation(summary = "닉네임 변경", description = "닉네임 변경 API")
     @GetMapping("/changeNickname")
-    fun changeNickname(@RequestHeader(name = "X-User-Email") email: String,
+    fun changeNickname(@RequestHeader(name = "X-User-Id") userId: Long,
                        @RequestParam(name = "newNickname", required = true) @Schema(description = "새 닉네임") newNickname : String) : ResponseDTO<Unit>
     {
-        return userService.changeNickname(email, newNickname)
+        return userService.changeNickname(userId, newNickname)
     }
 
     @Operation(summary = "비밀번호 변경", description = "비밀번호 변경 API")
     @PostMapping("/changePw")
-    fun changePw(@RequestHeader(name = "X-User-Email" ) email : String,
+    fun changePw(@RequestHeader(name = "X-User-Id" ) userId: Long,
                  @RequestHeader(name = "refreshToken") refreshToken : String,
                  @RequestBody changePwDTO: ChangePwDTO) : ResponseDTO<Unit>
     {
-        return userService.changePw(email, refreshToken, changePwDTO.curPw, changePwDTO.newPw, changePwDTO.newPwConfirm)
+        return userService.changePw(userId, refreshToken, changePwDTO.curPw, changePwDTO.newPw, changePwDTO.newPwConfirm)
     }
 }

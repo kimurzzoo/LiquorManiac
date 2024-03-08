@@ -56,10 +56,11 @@ class UserServiceTest {
     @Transactional
     fun test_withdrawal()
     {
-        val response = userService.withdrawal(email)
+        val user = userRepository.findByEmailAddress(email)
+        Assertions.assertNotNull(user)
+        val response = userService.withdrawal(user!!.id!!)
         Assertions.assertEquals(200, response.code)
 
-        val user = userRepository.findByEmailAddress(email)
         Assertions.assertNull(user)
     }
 
@@ -75,9 +76,12 @@ class UserServiceTest {
         val refreshToken = response.data?.refreshToken
 
         Assertions.assertTrue(jwtResolver.validateToken(accessToken))
-        Assertions.assertEquals(loginDTO.emailAddress, accessToken?.let { jwtResolver.getUsername(it) })
 
-        val logoutResponse = refreshToken?.let { userService.logout(loginDTO.emailAddress, it) }
+        val user = userRepository.findByEmailAddress(email)
+        Assertions.assertNotNull(user)
+        Assertions.assertEquals(user!!.id.toString(), accessToken?.let { jwtResolver.getUsername(it) })
+
+        val logoutResponse = refreshToken?.let { userService.logout(user.id!!, it) }
         Assertions.assertEquals(200, logoutResponse?.code)
 
         val userStatus = userStatusRepository.findByEmail(loginDTO.emailAddress)
@@ -88,7 +92,10 @@ class UserServiceTest {
     @Transactional
     fun test_sendVerificationMail_and_verification()
     {
-        val response = userService.sendVerificationMail(email)
+        val user = userRepository.findByEmailAddress(email)
+        Assertions.assertNotNull(user)
+
+        val response = userService.sendVerificationMail(user!!.id!!)
         Assertions.assertEquals(200, response.code)
 
         val verificationCodeOptional = verificationCodeRepository.findById(email)
@@ -99,7 +106,7 @@ class UserServiceTest {
 
         val code = verificationCode.code
 
-        val verificationResponse = userService.verification(email, code)
+        val verificationResponse = userService.verification(user!!.id!!, code)
         Assertions.assertEquals(200, verificationResponse.code)
 
         Assertions.assertFalse(verificationCodeRepository.existsById(email))
@@ -117,7 +124,10 @@ class UserServiceTest {
         val refreshToken = response.data?.refreshToken
 
         Assertions.assertTrue(jwtResolver.validateToken(accessToken))
-        Assertions.assertEquals(loginDTO.emailAddress, accessToken?.let { jwtResolver.getUsername(it) })
+
+        val user = userRepository.findByEmailAddress(email)
+        Assertions.assertNotNull(user)
+        Assertions.assertEquals(user!!.id.toString(), accessToken?.let { jwtResolver.getUsername(it) })
 
         val reissueResponse = refreshToken?.let { accessToken?.let { it1 -> userService.reissue(it1, it) } }
         Assertions.assertEquals(200, reissueResponse?.code)
@@ -125,7 +135,7 @@ class UserServiceTest {
         val newAccessToken = reissueResponse?.data?.accessToken
         val newRefreshToken = reissueResponse?.data?.refreshToken
         Assertions.assertTrue(jwtResolver.validateToken(newAccessToken))
-        Assertions.assertEquals(loginDTO.emailAddress, newAccessToken?.let {jwtResolver.getUsername(it)})
+        Assertions.assertEquals(user.id.toString(), newAccessToken?.let {jwtResolver.getUsername(it)})
     }
 
     @Test
@@ -140,6 +150,7 @@ class UserServiceTest {
         val refreshToken = response.data?.refreshToken
 
         Assertions.assertTrue(jwtResolver.validateToken(accessToken))
+        val user = userRepository.findByEmailAddress(loginDTO.emailAddress)
         Assertions.assertEquals(loginDTO.emailAddress, accessToken?.let { jwtResolver.getUsername(it) })
 
         val changeNicknameResponse = userService.changeNickname(email, "해쌈")
@@ -152,7 +163,6 @@ class UserServiceTest {
         Assertions.assertNotNull(userStatus)
         userStatus?.isEmpty()?.let { Assertions.assertTrue(it) }
 
-        val user = userRepository.findByEmailAddress(loginDTO.emailAddress)
         Assertions.assertNotNull(user)
         Assertions.assertEquals("해쌈", user?.nickname)
         Assertions.assertEquals("123456", user?.m_password)

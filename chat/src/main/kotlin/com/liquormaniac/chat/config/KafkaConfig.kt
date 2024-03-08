@@ -2,6 +2,7 @@ package com.liquormaniac.chat.config
 
 import org.apache.kafka.clients.admin.AdminClientConfig
 import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.clients.consumer.OffsetResetStrategy
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.StringSerializer
@@ -10,6 +11,8 @@ import org.springframework.context.annotation.Bean
 import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.core.*
+import java.util.*
+import kotlin.collections.HashMap
 
 @EnableKafka
 class KafkaConfig {
@@ -39,7 +42,9 @@ class KafkaConfig {
     private fun consumerFactory(): ConsumerFactory<String, String> {
         val props: MutableMap<String, Any> = HashMap()
         props[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapAddress
-        props[ConsumerConfig.GROUP_ID_CONFIG] = "chat" //TODO 랜덤 ID로 변경, 그래야 각 인스턴스마다 고유 GROUP ID가 생긴다.
+        props[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = OffsetResetStrategy.LATEST //.toString()
+        props[ConsumerConfig.GROUP_ID_CONFIG] = UUID.randomUUID().toString()
+        props[ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG] = false
         props[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class
         props[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class
         return DefaultKafkaConsumerFactory(props)
