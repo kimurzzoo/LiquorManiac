@@ -53,7 +53,8 @@ class UserService(private val userRepository: UserRepository,
         }
         catch (e : Exception)
         {
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage = e.message)
+            e.printStackTrace()
+            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
         }
     }
 
@@ -82,7 +83,8 @@ class UserService(private val userRepository: UserRepository,
         }
         catch (e : Exception)
         {
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage = e.message)
+            e.printStackTrace()
+            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
         }
     }
 
@@ -106,7 +108,7 @@ class UserService(private val userRepository: UserRepository,
 
             val indicator : String = UUID.randomUUID().toString()
 
-            val accessToken : String = jwtProvider.createAccessToken(user.emailAddress, indicator, user.role)
+            val accessToken : String = jwtProvider.createAccessToken(user.id!!, indicator, user.role)
             val refreshToken : String = jwtProvider.createRefreshToken(indicator)
 
             userStatusRepository.save(UserStatus(refreshToken, indicator, loginInfo.emailAddress))
@@ -115,6 +117,7 @@ class UserService(private val userRepository: UserRepository,
         }
         catch (e : Exception)
         {
+            e.printStackTrace()
             return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
         }
     }
@@ -145,7 +148,8 @@ class UserService(private val userRepository: UserRepository,
         }
         catch (e : Exception)
         {
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage = e.message)
+            e.printStackTrace()
+            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
         }
     }
 
@@ -175,7 +179,8 @@ class UserService(private val userRepository: UserRepository,
         }
         catch (e : Exception)
         {
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage = e.message)
+            e.printStackTrace()
+            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
         }
     }
 
@@ -216,7 +221,8 @@ class UserService(private val userRepository: UserRepository,
         }
         catch (e : Exception)
         {
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage = e.message)
+            e.printStackTrace()
+            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
         }
     }
 
@@ -234,7 +240,14 @@ class UserService(private val userRepository: UserRepository,
                 return ResponseDTO(ResponseCode.REISSUE_NO_STATUS)
             }
 
-            if(accessTokenClaims.subject == userStatus.email
+            val user = userRepository.findById(accessTokenClaims.subject.toLong()).orElse(null)
+
+            if(user == null)
+            {
+                return ResponseDTO(ResponseCode.NO_USER)
+            }
+
+            if(user.emailAddress == userStatus.email
                 && accessTokenClaims["indicator"].toString() == refreshTokenClaims.subject
                 && refreshTokenClaims.subject == userStatus.indicator)
             {
@@ -251,7 +264,7 @@ class UserService(private val userRepository: UserRepository,
 
                 val indicator : String = UUID.randomUUID().toString()
 
-                val newAccessToken : String = jwtProvider.createAccessToken(user.emailAddress, indicator, user.role)
+                val newAccessToken : String = jwtProvider.createAccessToken(user.id!!, indicator, user.role)
                 val newRefreshToken : String = jwtProvider.createRefreshToken(indicator)
 
                 userStatusRepository.deleteById(refreshToken)
@@ -266,7 +279,8 @@ class UserService(private val userRepository: UserRepository,
         }
         catch (e : Exception)
         {
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage = e.message)
+            e.printStackTrace()
+            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
         }
     }
 
@@ -289,6 +303,7 @@ class UserService(private val userRepository: UserRepository,
         }
         catch (e : Exception)
         {
+            e.printStackTrace()
             return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
         }
     }
@@ -324,6 +339,7 @@ class UserService(private val userRepository: UserRepository,
         }
         catch (e : Exception)
         {
+            e.printStackTrace()
             return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
         }
     }
@@ -347,6 +363,7 @@ class UserService(private val userRepository: UserRepository,
         }
         catch (e : Exception)
         {
+            e.printStackTrace()
             return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
         }
     }
@@ -368,6 +385,7 @@ class UserService(private val userRepository: UserRepository,
         }
         catch (e : Exception)
         {
+            e.printStackTrace()
             return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
         }
     }

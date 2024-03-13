@@ -5,7 +5,7 @@ import jakarta.persistence.*
 
 @Entity
 @Table(name="chatroom")
-class Chatroom(userId1 : Long, isUser1 : Boolean = true, userId2 : Long, isUser2 : Boolean = true) : BaseEntity() {
+class Chatroom(userId1 : Long, userId2 : Long, isUser1 : Boolean = true, isUser2 : Boolean = true) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

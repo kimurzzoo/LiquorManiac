@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface MessageRepository : JpaRepository<Message, Long> {
+    fun findByChatroomId(chatroomId: Long) : List<Message>
 }

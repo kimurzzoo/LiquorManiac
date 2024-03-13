@@ -22,5 +22,18 @@ enum class ResponseCode(val code: Int, val message: String) {
     VERIFICATION_ALREADY_VERIFIED(1081, "You are already verified."),
     VERIFICATION_CODE_EXPIRED(1082, "Your code is expired"),
     VERIFICATION_WRONG_CODE(1083, "Your code is wrong"),
-    //
+
+    //chat
+    CREATECHATROOM_ALREADY_EXISTS(2002, "Chatroom already exists."),
+    CREATECHATROOM_NOT_DELETED_YET(2003, "Chatroom is not deleted yet."),
+    CREATECHATROOM_NO_SELF_CHAT(2004, "Self-chat is not allowed."),
+    CREATECHATROOM_MANY_SAME_CHATROOMS(2005, "There are many same chatrooms."),
+    CREATECHATROOM_WRONG_CHATROOM(2006, "Wrong chatroom is selected."),
+    LEAVECHATROOM_NOT_YOURS(2011, "This chatroom is not yours."),
+    LEAVECHATROOM_ALREADY_LEAVED(2012, "You already leaved this chatroom."),
+    LEAVECHATROOM_NO_CHATROOM(2013, "There is no chatroom to leave."),
+    MESSAGES_NO_CHATROOM(2021, "There is no chatroom"),
+    MESSAGES_NOT_YOURS(2022, "This chatroom is not yours."),
+    UPLOADMESSAGEIMAGES_NO_CHATROOM(2031, "There is no chatroom"),
+    UPLOADMESSAGEIMAGES_NOT_YOUR_CHATROOM(2032, "This chatroom is not yours.")
 }

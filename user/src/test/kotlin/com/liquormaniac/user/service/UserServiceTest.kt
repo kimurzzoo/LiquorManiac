@@ -56,11 +56,12 @@ class UserServiceTest {
     @Transactional
     fun test_withdrawal()
     {
-        val user = userRepository.findByEmailAddress(email)
+        var user = userRepository.findByEmailAddress(email)
         Assertions.assertNotNull(user)
         val response = userService.withdrawal(user!!.id!!)
         Assertions.assertEquals(200, response.code)
 
+        user = userRepository.findByEmailAddress(email)
         Assertions.assertNull(user)
     }
 
@@ -151,12 +152,12 @@ class UserServiceTest {
 
         Assertions.assertTrue(jwtResolver.validateToken(accessToken))
         val user = userRepository.findByEmailAddress(loginDTO.emailAddress)
-        Assertions.assertEquals(loginDTO.emailAddress, accessToken?.let { jwtResolver.getUsername(it) })
+        Assertions.assertEquals(user!!.id.toString(), accessToken?.let { jwtResolver.getUsername(it) })
 
-        val changeNicknameResponse = userService.changeNickname(email, "해쌈")
+        val changeNicknameResponse = userService.changeNickname(user.id!!, "해쌈")
         Assertions.assertEquals(200, changeNicknameResponse.code)
 
-        val changePwResponse = refreshToken?.let { userService.changePw(email, it, loginDTO.password, "123456", "123456") }
+        val changePwResponse = refreshToken?.let { userService.changePw(user.id!!, it, loginDTO.password, "123456", "123456") }
         Assertions.assertEquals(200, changePwResponse?.code)
 
         val userStatus = refreshToken?.let { userStatusRepository.findById(it) }
