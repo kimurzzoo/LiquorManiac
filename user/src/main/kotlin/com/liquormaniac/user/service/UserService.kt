@@ -368,7 +368,7 @@ class UserService(private val userRepository: UserRepository,
         }
     }
 
-    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED, rollbackFor = [Exception::class])
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED, noRollbackFor = [Exception::class])
     fun isBlocked(userId : Long) : ResponseDTO<Boolean>
     {
         try {

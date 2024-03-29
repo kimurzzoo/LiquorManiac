@@ -44,7 +44,11 @@ class JwtResolver(private val resourceLoader: ResourceLoader) {
     fun validateToken(jwtToken: String?): Boolean {
         return try {
             val claims = Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(jwtToken)
-            !claims.body.expiration.before(Date())
+            if(claims.header.algorithm != "RS256")
+            {
+                false
+            }
+            else !claims.body.expiration.before(Date())
         } catch (e: Exception) {
             false
         }

@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.runApplication
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import org.springframework.data.redis.core.RedisKeyValueAdapter
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories
 
 @SpringBootApplication(scanBasePackages = [
@@ -15,7 +16,7 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 	"com.liquormaniac.common.others.redis_config"])
 @EntityScan(basePackages = ["com.liquormaniac.common.domain.domain_user.entity"])
 @EnableJpaRepositories(basePackages = ["com.liquormaniac.common.domain.domain_user.repository"])
-@EnableRedisRepositories(basePackages = ["com.liquormaniac.common.domain.domain_user.redis_repository"])
+@EnableRedisRepositories(basePackages = ["com.liquormaniac.common.domain.domain_user.redis_repository"], enableKeyspaceEvents = RedisKeyValueAdapter.EnableKeyspaceEvents.ON_STARTUP)
 @EnableJpaAuditing
 class UserApplication
 fun main(args: Array<String>) {

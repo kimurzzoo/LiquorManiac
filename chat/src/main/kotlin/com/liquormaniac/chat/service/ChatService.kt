@@ -67,7 +67,22 @@ class ChatService(private val messageRepository: MessageRepository,
     fun sendMessage(userId: Long, chatroomId: Long, content: String) : ResponseDTO<Unit>
     {
         try {
+            val chatroom = chatroomRepository.findById(chatroomId).orElse(null)
+                ?: return ResponseDTO(ResponseCode.SENDMESSAGE_NO_CHATROOM)
 
+            if(chatroom.userId1 != userId && chatroom.userId2 != userId)
+            {
+                return ResponseDTO(ResponseCode.SENDMESSAGE_NOT_YOUR_CHATROOM)
+            }
+
+            /* TODO Message 저장
+                kafka로 다른 인스턴스에 Message 이벤트 배포
+             */
+        }
+        catch (e : Exception)
+        {
+            e.printStackTrace()
+            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage = e.message)
         }
     }
 }

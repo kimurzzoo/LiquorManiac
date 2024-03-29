@@ -35,5 +35,7 @@ enum class ResponseCode(val code: Int, val message: String) {
     MESSAGES_NO_CHATROOM(2021, "There is no chatroom"),
     MESSAGES_NOT_YOURS(2022, "This chatroom is not yours."),
     UPLOADMESSAGEIMAGES_NO_CHATROOM(2031, "There is no chatroom"),
-    UPLOADMESSAGEIMAGES_NOT_YOUR_CHATROOM(2032, "This chatroom is not yours.")
+    UPLOADMESSAGEIMAGES_NOT_YOUR_CHATROOM(2032, "This chatroom is not yours."),
+    SENDMESSAGE_NO_CHATROOM(2041, "There is no chatroom"),
+    SENDMESSAGE_NOT_YOUR_CHATROOM(2042, "This chatroom is not yours."),
 }
