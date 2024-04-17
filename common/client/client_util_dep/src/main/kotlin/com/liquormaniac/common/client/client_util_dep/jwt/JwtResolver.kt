@@ -4,9 +4,11 @@ import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import jakarta.annotation.PostConstruct
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.stereotype.Component
+import java.io.InputStream
 import java.security.PublicKey
 import java.util.*
 
@@ -19,8 +21,8 @@ class JwtResolver(private val resourceLoader: ResourceLoader) {
 
     @PostConstruct
     protected fun init() {
-        val publicKeyResource : Resource = resourceLoader.getResource(publicKeyPath)
-        val temppublickey = publicKey(publicKeyResource.file.toPath())
+        val publicKeyInputStream : InputStream = ClassPathResource(publicKeyPath).inputStream
+        val temppublickey = publicKey(publicKeyInputStream)
         if(temppublickey == null)
         {
             System.out.println("key is not initiated")

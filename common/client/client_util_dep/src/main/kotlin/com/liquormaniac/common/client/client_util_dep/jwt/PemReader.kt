@@ -1,5 +1,6 @@
 package com.liquormaniac.common.client.client_util_dep.jwt
 
+import java.io.InputStream
 import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Path
@@ -11,10 +12,10 @@ import java.security.spec.X509EncodedKeySpec
 import java.util.*
 
 
-fun privateKey(path : Path) : PrivateKey?
+fun privateKey(inputStream : InputStream) : PrivateKey?
 {
     try {
-        val key : String = String(Files.readAllBytes(path), Charset.defaultCharset())
+        val key : String = String(inputStream.readAllBytes(), Charset.defaultCharset())
         val privateKeyPEM: String = key
             .replace("-----BEGIN PRIVATE KEY-----", "")
             .replace(System.lineSeparator(), "")
@@ -32,10 +33,10 @@ fun privateKey(path : Path) : PrivateKey?
     }
 }
 
-fun publicKey(path : Path) : PublicKey?
+fun publicKey(inputStream: InputStream) : PublicKey?
 {
     try {
-        val key : String = String(Files.readAllBytes(path), Charset.defaultCharset())
+        val key : String = String(inputStream.readAllBytes(), Charset.defaultCharset())
         val publicKeyPEM: String = key
             .replace("-----BEGIN PUBLIC KEY-----", "")
             .replace(System.lineSeparator(), "")

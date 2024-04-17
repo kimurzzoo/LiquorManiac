@@ -5,9 +5,11 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import jakarta.annotation.PostConstruct
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.stereotype.Component
+import java.io.InputStream
 import java.security.Key
 import java.security.PrivateKey
 import java.util.*
@@ -30,8 +32,8 @@ class JwtProvider(private val resourceLoader: ResourceLoader) {
 
     @PostConstruct
     protected fun init() {
-        val privateKeyResource : Resource = resourceLoader.getResource(privateKeyPath)
-        val tempprivatekey = privateKey(privateKeyResource.file.toPath())
+        val privateKeyInputStream : InputStream = ClassPathResource(privateKeyPath).inputStream
+        val tempprivatekey = privateKey(privateKeyInputStream)
         if(tempprivatekey == null)
         {
             System.out.println("key is not initiated")
