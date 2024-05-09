@@ -2,6 +2,7 @@ package com.liquormaniac.chat.service
 
 import com.liquormaniac.common.core.core_web.dto.ResponseDTO
 import com.liquormaniac.common.core.core_web.enums.ResponseCode
+import com.liquormaniac.common.core.core_web.exception.ResponseException
 import com.liquormaniac.common.domain.domain_chat.entity.Message
 import com.liquormaniac.common.domain.domain_chat.repository.ChatroomRepository
 import com.liquormaniac.common.domain.domain_chat.repository.MessageImageRepository
@@ -34,7 +35,7 @@ class ChatService(private val messageRepository: MessageRepository,
         catch (e : Exception)
         {
             e.printStackTrace()
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage = e.message)
+            throw ResponseException(ResponseCode.SERVER_ERROR, e)
         }
     }
 
@@ -59,7 +60,7 @@ class ChatService(private val messageRepository: MessageRepository,
         catch (e : Exception)
         {
             e.printStackTrace()
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage = e.message)
+            throw ResponseException(ResponseCode.SERVER_ERROR, e)
         }
     }
 
@@ -82,7 +83,7 @@ class ChatService(private val messageRepository: MessageRepository,
         catch (e : Exception)
         {
             e.printStackTrace()
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage = e.message)
+            throw ResponseException(ResponseCode.SERVER_ERROR, e)
         }
     }
 }

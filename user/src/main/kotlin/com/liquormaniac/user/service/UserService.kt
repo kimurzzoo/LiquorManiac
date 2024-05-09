@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
 import com.liquormaniac.common.client.client_util_dep.random.verificationCodeGenerator
+import com.liquormaniac.common.core.core_web.exception.ResponseException
 import com.liquormaniac.common.domain.domain_user.entity.VerificationCode
 import com.liquormaniac.common.domain.domain_user.redis_repository.VerificationCodeRepository
 
@@ -54,7 +55,7 @@ class UserService(private val userRepository: UserRepository,
         catch (e : Exception)
         {
             e.printStackTrace()
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
+            throw ResponseException(ResponseCode.SERVER_ERROR, e)
         }
     }
 
@@ -84,7 +85,7 @@ class UserService(private val userRepository: UserRepository,
         catch (e : Exception)
         {
             e.printStackTrace()
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
+            throw ResponseException(ResponseCode.SERVER_ERROR, e)
         }
     }
 
@@ -118,7 +119,7 @@ class UserService(private val userRepository: UserRepository,
         catch (e : Exception)
         {
             e.printStackTrace()
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
+            throw ResponseException(ResponseCode.SERVER_ERROR, e)
         }
     }
 
@@ -149,7 +150,7 @@ class UserService(private val userRepository: UserRepository,
         catch (e : Exception)
         {
             e.printStackTrace()
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
+            throw ResponseException(ResponseCode.SERVER_ERROR, e)
         }
     }
 
@@ -180,7 +181,7 @@ class UserService(private val userRepository: UserRepository,
         catch (e : Exception)
         {
             e.printStackTrace()
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
+            throw ResponseException(ResponseCode.SERVER_ERROR, e)
         }
     }
 
@@ -222,7 +223,7 @@ class UserService(private val userRepository: UserRepository,
         catch (e : Exception)
         {
             e.printStackTrace()
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
+            throw ResponseException(ResponseCode.SERVER_ERROR, e)
         }
     }
 
@@ -280,7 +281,7 @@ class UserService(private val userRepository: UserRepository,
         catch (e : Exception)
         {
             e.printStackTrace()
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
+            throw ResponseException(ResponseCode.SERVER_ERROR, e)
         }
     }
 
@@ -304,7 +305,7 @@ class UserService(private val userRepository: UserRepository,
         catch (e : Exception)
         {
             e.printStackTrace()
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
+            throw ResponseException(ResponseCode.SERVER_ERROR, e)
         }
     }
 
@@ -340,7 +341,7 @@ class UserService(private val userRepository: UserRepository,
         catch (e : Exception)
         {
             e.printStackTrace()
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
+            throw ResponseException(ResponseCode.SERVER_ERROR, e)
         }
     }
 
@@ -364,7 +365,7 @@ class UserService(private val userRepository: UserRepository,
         catch (e : Exception)
         {
             e.printStackTrace()
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
+            throw ResponseException(ResponseCode.SERVER_ERROR, e)
         }
     }
 
@@ -386,7 +387,7 @@ class UserService(private val userRepository: UserRepository,
         catch (e : Exception)
         {
             e.printStackTrace()
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage =  e.message)
+            throw ResponseException(ResponseCode.SERVER_ERROR, e)
         }
     }
 }

@@ -2,6 +2,7 @@ package com.liquormaniac.chat.service
 
 import com.liquormaniac.common.core.core_web.dto.ResponseDTO
 import com.liquormaniac.common.core.core_web.enums.ResponseCode
+import com.liquormaniac.common.core.core_web.exception.ResponseException
 import com.liquormaniac.common.domain.domain_chat.entity.Chatroom
 import com.liquormaniac.common.domain.domain_chat.repository.ChatroomRepository
 import org.springframework.stereotype.Service
@@ -84,7 +85,7 @@ class ChatroomService(private val chatroomRepository: ChatroomRepository) {
         catch (e : Exception)
         {
             e.printStackTrace()
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage = e.message)
+            throw ResponseException(ResponseCode.SERVER_ERROR, e)
         }
     }
 
@@ -137,7 +138,7 @@ class ChatroomService(private val chatroomRepository: ChatroomRepository) {
         catch (e : Exception)
         {
             e.printStackTrace()
-            return ResponseDTO(ResponseCode.SERVER_ERROR, errorMessage = e.message)
+            throw ResponseException(ResponseCode.SERVER_ERROR, e)
         }
     }
 }
