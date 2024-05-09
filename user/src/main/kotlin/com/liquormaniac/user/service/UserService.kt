@@ -108,9 +108,10 @@ class UserService(private val userRepository: UserRepository,
             }
 
             val indicator : String = UUID.randomUUID().toString()
+            val chain : String = UUID.randomUUID().toString()
 
-            val accessToken : String = jwtProvider.createAccessToken(user.id!!, indicator, user.role)
-            val refreshToken : String = jwtProvider.createRefreshToken(indicator)
+            val accessToken : String = jwtProvider.createAccessToken(user.id!!, indicator, chain, user.role)
+            val refreshToken : String = jwtProvider.createRefreshToken(indicator, chain)
 
             userStatusRepository.save(UserStatus(refreshToken, indicator, loginInfo.emailAddress))
 
@@ -231,7 +232,13 @@ class UserService(private val userRepository: UserRepository,
     fun reissue(accessToken: String, refreshToken: String) : ResponseDTO<TokenDTO>
     {
         try {
-            val accessTokenClaims: Claims = jwtResolver.getClaims(accessToken)
+            val accessTokenClaims: Claims? = jwtResolver.getClaimsFromExpiredToken(accessToken)
+
+            if(accessTokenClaims == null)
+            {
+                return ResponseDTO(ResponseCode.REISSUE_NO_STATUS)
+            }
+
             val refreshTokenClaims: Claims = jwtResolver.getClaims(refreshToken)
 
             val userStatus = userStatusRepository.findByIdAndIndicator(refreshToken, refreshTokenClaims.subject)
@@ -250,7 +257,8 @@ class UserService(private val userRepository: UserRepository,
 
             if(user.emailAddress == userStatus.email
                 && accessTokenClaims["indicator"].toString() == refreshTokenClaims.subject
-                && refreshTokenClaims.subject == userStatus.indicator)
+                && refreshTokenClaims.subject == userStatus.indicator
+                && accessTokenClaims["chain"] == refreshTokenClaims["chain"])
             {
                 val user : User? = userRepository.findByEmailAddress(userStatus.email)
                 if(user == null)
@@ -264,9 +272,10 @@ class UserService(private val userRepository: UserRepository,
                 }
 
                 val indicator : String = UUID.randomUUID().toString()
+                val chain : String = UUID.randomUUID().toString()
 
-                val newAccessToken : String = jwtProvider.createAccessToken(user.id!!, indicator, user.role)
-                val newRefreshToken : String = jwtProvider.createRefreshToken(indicator)
+                val newAccessToken : String = jwtProvider.createAccessToken(user.id!!, indicator, chain, user.role)
+                val newRefreshToken : String = jwtProvider.createRefreshToken(indicator, chain)
 
                 userStatusRepository.deleteById(refreshToken)
                 userStatusRepository.save(UserStatus(newRefreshToken, indicator, user.emailAddress))

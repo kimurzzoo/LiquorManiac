@@ -1,11 +1,12 @@
 package com.liquormaniac.common.client.client_util_dep.jwt
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.Claims
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import jakarta.annotation.PostConstruct
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.ClassPathResource
-import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.stereotype.Component
 import java.io.InputStream
@@ -18,6 +19,8 @@ class JwtResolver(private val resourceLoader: ResourceLoader) {
     private var publicKeyPath : String = ""
 
     private lateinit var publicKey : PublicKey
+
+    private val objectMapper : ObjectMapper = ObjectMapper()
 
     @PostConstruct
     protected fun init() {
@@ -36,6 +39,32 @@ class JwtResolver(private val resourceLoader: ResourceLoader) {
     fun getClaims(token: String) : Claims
     {
         return Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(token).body
+    }
+
+    fun getClaimsFromExpiredToken(token : String) : Claims?
+    {
+        try {
+            return getClaims(token)
+        }
+        catch (e : ExpiredJwtException)
+        {
+            val tokenSplit = token.split(".")
+            val payloadJsonString = Base64.getDecoder().decode(tokenSplit[1]).contentToString()
+            return getClaimsFromPayload(payloadJsonString)
+        }
+        catch (e : Exception)
+        {
+            return null
+        }
+    }
+
+    fun getClaimsFromPayload(payloadJsonString : String) : Claims
+    {
+        val payloadMap = objectMapper.readValue(payloadJsonString, HashMap::class.java)
+        val claims = Jwts.claims().setSubject(payloadMap["sub"].toString())
+        claims["indicator"] = payloadMap["indicator"].toString()
+        claims["role"] = payloadMap["role"].toString()
+        return claims
     }
 
     fun getUsername(token : String) : String

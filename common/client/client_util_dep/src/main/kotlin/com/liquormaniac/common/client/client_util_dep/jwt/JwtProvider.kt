@@ -44,10 +44,11 @@ class JwtProvider(private val resourceLoader: ResourceLoader) {
         }
     }
 
-    fun createAccessToken(userId : Long, indicator: String, role : String): String {
+    fun createAccessToken(userId : Long, indicator: String, chain : String, role : String): String {
         val claims: Claims = Jwts.claims().setSubject(userId.toString()) // JWT payload 에 저장되는 정보단위
         claims["indicator"] = indicator
         claims["role"] = role
+        claims["chain"] = chain
         val now = Date()
         return Jwts.builder()
             .setHeaderParam("typ", "JWT")
@@ -60,9 +61,10 @@ class JwtProvider(private val resourceLoader: ResourceLoader) {
             .compact()
     }
 
-    fun createRefreshToken(indicator : String) : String
+    fun createRefreshToken(indicator : String, chain : String) : String
     {
         val claims: Claims = Jwts.claims().setSubject(indicator)
+        claims["chain"] = chain
         val now = Date()
 
         return Jwts.builder()
