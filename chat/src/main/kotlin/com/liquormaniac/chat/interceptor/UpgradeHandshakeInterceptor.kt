@@ -21,12 +21,6 @@ class UpgradeHandshakeInterceptor(private val jwtResolver: JwtResolver) : HttpSe
             return false
         }
 
-        val isTokenValid = jwtResolver.validateToken(uriSplit[1])
-        if(!isTokenValid)
-        {
-            return false
-        }
-
-        return super.beforeHandshake(request, response, wsHandler, attributes)
+        return jwtResolver.validateToken(uriSplit[1])
     }
 }
